@@ -1,0 +1,13 @@
+modules = ["python-3.11", "nodejs-20"]
+run = ["bash", "scripts/dev.sh"]
+
+[deployment]
+# Reserved VM ("gce") keeps background crawls running after the request that
+# started them returns. See README "Deployments" before switching to Autoscale.
+deploymentTarget = "gce"
+build = ["bash", "scripts/build.sh"]
+run = ["bash", "scripts/start.sh"]
+
+[[ports]]
+localPort = 8000
+externalPort = 80

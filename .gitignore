@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+.pytest_cache/
+data/
+web/node_modules/
+web/dist/
+.claude/
+*.db
+.env
+index-health-monitor-spec.md
+*.tsbuildinfo
