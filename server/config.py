@@ -54,11 +54,8 @@ def get_settings() -> Settings:
     if auth_mode == "dev" and is_deployment:
         raise RuntimeError("AUTH_MODE=dev is not allowed in a deployment")
 
+    # Empty means "generate one and keep it in the database" (see repo.get_or_create_secret).
     session_secret = os.environ.get("SESSION_SECRET", "")
-    if not session_secret:
-        if auth_mode != "dev":
-            raise RuntimeError("SESSION_SECRET must be set (add it in Replit Secrets)")
-        session_secret = "dev-only-secret"
 
     return Settings(
         on_replit=on_replit,

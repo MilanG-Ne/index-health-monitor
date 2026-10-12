@@ -67,9 +67,13 @@ def create_app() -> FastAPI:
 
     app = FastAPI(title="Index Health Monitor", lifespan=lifespan, docs_url=None, redoc_url=None)
     app.state.fetcher_factory = default_fetcher
+    session_secret = settings.session_secret
+    if not session_secret:
+        init_db()
+        session_secret = repo.get_or_create_secret("session_secret")
     app.add_middleware(
         SessionMiddleware,
-        secret_key=settings.session_secret,
+        secret_key=session_secret,
         same_site="lax",
         https_only=settings.on_replit,
         max_age=14 * 24 * 3600,

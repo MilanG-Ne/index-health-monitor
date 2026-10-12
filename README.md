@@ -48,7 +48,7 @@ The tests run against a fake website in memory, so they never touch the network.
 1. **Import:** push this folder to GitHub, then in Replit choose *Create Repl → Import from GitHub*. The `.replit` file sets up Python 3.11, Node 20, the Run button and the deployment.
 2. **Database:** open the **Database** tool and create a PostgreSQL database. Replit sets `DATABASE_URL` for you, and the tables are created on first start.
 3. **Object Storage:** open the **Object Storage** tool and create a bucket. If you have more than one bucket, set `STORAGE_BUCKET_ID` in Secrets.
-4. **Secrets:** add `SESSION_SECRET` with a long random value, for example the output of `python -c "import secrets; print(secrets.token_urlsafe(48))"`.
+4. **Secrets:** nothing is required. On first start the app generates a random session key and keeps it in the database. If you prefer to manage it yourself, set `SESSION_SECRET` in Secrets.
 5. **Auth:** the app uses Replit Auth through standard OpenID Connect:
    - issuer: `https://replit.com/oidc`;
    - client id: the Repl's `REPL_ID`;
@@ -62,7 +62,7 @@ The tests run against a fake website in memory, so they never touch the network.
      - Build command: `pip install -r requirements.txt`.
      - Run command: `python -m server.jobs.weekly`.
      - Schedule: every Monday at 06:00.
-     - Give it the same `SESSION_SECRET` secret. It uses the same database and bucket.
+     - It uses the same database and bucket as the web app.
 8. **Optional:** add a custom domain such as `index.ivig.dev`. If you use a different domain, update `USER_AGENT` in `server/crawler/fetch.py` so it points at your `/bot` page.
 
 ### Why Reserved VM and not Autoscale
@@ -73,7 +73,7 @@ A check runs in the background after the "start check" request has returned. Aut
 | Variable | Default | Purpose |
 |---|---|---|
 | `DATABASE_URL` | local SQLite file | Set by Replit's Database tool |
-| `SESSION_SECRET` | required on Replit | Signs the login cookie |
+| `SESSION_SECRET` | generated and stored in the database | Signs the login cookie |
 | `AUTH_MODE` | `replit` on Replit, `dev` locally | `dev` is refused inside a deployment |
 | `STORAGE_MODE` | `replit` on Replit, `local` locally | Where CSV reports go |
 | `STORAGE_BUCKET_ID` | default bucket | Pick a specific Object Storage bucket |

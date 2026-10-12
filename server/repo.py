@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import and_, delete, func, insert, select, update
 
-from .db import crawl_runs, get_engine, issues, sites, url_results, users
+from .db import app_secrets, crawl_runs, get_engine, issues, sites, url_results, users
 
 
 def now() -> datetime:
@@ -13,6 +13,31 @@ def now() -> datetime:
 
 def _row(r) -> dict | None:
     return dict(r._mapping) if r is not None else None
+
+
+# App secrets
+
+def get_or_create_secret(key: str) -> str:
+    """Returns a random secret stored in the database, creating it on first use.
+
+    Lets the app run without anyone pasting a SESSION_SECRET into Replit Secrets.
+    """
+    import secrets
+
+    from sqlalchemy.exc import IntegrityError
+
+    with get_engine().begin() as c:
+        value = c.execute(select(app_secrets.c.value).where(app_secrets.c.key == key)).scalar()
+        if value:
+            return value
+    try:
+        with get_engine().begin() as c:
+            value = secrets.token_urlsafe(48)
+            c.execute(insert(app_secrets).values(key=key, value=value))
+            return value
+    except IntegrityError:  # another instance created it first
+        with get_engine().begin() as c:
+            return c.execute(select(app_secrets.c.value).where(app_secrets.c.key == key)).scalar_one()
 
 
 # Users

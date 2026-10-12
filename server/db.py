@@ -99,6 +99,13 @@ issues = Table(
     Column("detail", Text),
 )
 
+app_secrets = Table(
+    "app_secrets",
+    metadata,
+    Column("key", Text, primary_key=True),
+    Column("value", Text, nullable=False),
+)
+
 Index("ix_sites_user", sites.c.user_id)
 Index("ix_runs_site", crawl_runs.c.site_id)
 Index("ix_url_results_run", url_results.c.run_id)
